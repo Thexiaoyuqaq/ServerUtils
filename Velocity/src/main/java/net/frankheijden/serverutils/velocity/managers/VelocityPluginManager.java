@@ -21,10 +21,7 @@ import com.velocitypowered.api.scheduler.ScheduledTask;
 import java.io.Closeable;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import net.frankheijden.serverutils.common.entities.exceptions.InvalidPluginDescriptionException;
 import net.frankheijden.serverutils.common.entities.results.CloseablePluginResults;
@@ -288,7 +285,13 @@ public class VelocityPluginManager extends AbstractPluginManager<PluginContainer
 
     @Override
     public List<PluginContainer> getPlugins() {
-        return new ArrayList<>(proxy.getPluginManager().getPlugins());
+        Iterator<PluginContainer> plugins = proxy.getPluginManager().getPlugins().iterator();
+        List<PluginContainer> result = new ArrayList<>();
+        while (plugins.hasNext()) {
+            PluginContainer plugin = plugins.next();
+            if (plugin.getDescription().getId() != "velocity") result.add(plugin);
+        }
+        return result;
     }
 
     @Override
