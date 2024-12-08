@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     `java-library`
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.gradleup.shadow") version "8.3.5"
 }
 
 group = "net.frankheijden.serverutils"
@@ -19,7 +19,7 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "maven-publish")
     apply(plugin = "checkstyle")
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "com.gradleup.shadow")
 
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -30,7 +30,7 @@ subprojects {
         mavenCentral()
         maven("https://jitpack.io")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
-        maven("https://papermc.io/repo/repository/maven-public/")
+        maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://libraries.minecraft.net")
     }
 
@@ -38,7 +38,7 @@ subprojects {
         implementation("cloud.commandframework:cloud-core:${VersionConstants.cloudVersion}")
         implementation("cloud.commandframework:cloud-brigadier:${VersionConstants.cloudVersion}")
         implementation("com.github.FrankHeijden:MinecraftReflection:1.0.0")
-        implementation("com.google.code.gson:gson:2.8.6")
+        implementation("com.google.code.gson:gson:2.11.0")
         implementation("me.lucko:commodore:2.2")
         compileOnly("com.mojang:brigadier:1.0.18")
 
