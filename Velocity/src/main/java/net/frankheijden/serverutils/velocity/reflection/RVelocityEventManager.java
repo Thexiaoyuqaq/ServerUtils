@@ -1,6 +1,7 @@
 package net.frankheijden.serverutils.velocity.reflection;
 
 import com.google.common.collect.Multimap;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.velocitypowered.api.event.EventHandler;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.plugin.PluginContainer;
@@ -9,13 +10,19 @@ import dev.frankheijden.minecraftreflection.MinecraftReflection;
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class RVelocityEventManager {
 
     private static final MinecraftReflection reflection = MinecraftReflection
             .of("com.velocitypowered.proxy.event.VelocityEventManager");
+
+    private static final Executor asyncExecutor = Executors
+            .newFixedThreadPool(1, new ThreadFactoryBuilder()
+                    .setNameFormat("ServerUtils Async Event Executor - #%d").setDaemon(true).build());
 
     private RVelocityEventManager() {}
 
@@ -65,8 +72,7 @@ public class RVelocityEventManager {
         Object registrationsEmptyArray = Array.newInstance(RHandlerRegistration.reflection.getClazz(), 0);
         Class<?> registrationsArrayClass = registrationsEmptyArray.getClass();
 
-        ExecutorService executor = reflection.invoke(manager, "getAsyncExecutor");
-        executor.execute(() -> reflection.invoke(
+        asyncExecutor.execute(() -> reflection.invoke(
                 manager,
                 "fire",
                 ClassObject.of(CompletableFuture.class, future),
