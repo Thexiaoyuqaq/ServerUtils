@@ -28,21 +28,35 @@ jobs:
         cache: 'gradle'
 
     - name: 赋予 gradlew 可执行权限
-      run: chmod +x gradlew
+      run: chmod +x Bukkit/gradlew Bungee/gradlew Velocity/gradlew
 
-    - name: 构建项目
-      run: ./gradlew clean build --stacktrace
+    # 构建 Bukkit 版本
+    - name: 构建 Bukkit
+      run: cd Bukkit && ./gradlew clean build --stacktrace
 
-    - name: 上传构建产物 (Artifacts)
+    # 构建 Bungee 版本
+    - name: 构建 Bungee
+      run: cd Bungee && ./gradlew clean build --stacktrace
+
+    # 构建 Velocity 版本
+    - name: 构建 Velocity
+      run: cd Velocity && ./gradlew clean build --stacktrace
+
+    # 上传构建产物 (Artifacts)
+    - name: 上传 Bukkit 产物
       uses: actions/upload-artifact@v4
       with:
-        name: ServerUtils-${{ matrix.java-version }}
-        path: build/libs/*.jar
+        name: ServerUtils-Bukkit
+        path: Bukkit/build/libs/*.jar
 
-    - name: 发布 Release 
-      if: startsWith(github.ref, 'refs/tags/v')
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        VERSION=${GITHUB_REF#refs/tags/}
-        gh release create "$VERSION" build/libs/*.jar --title "Release $VERSION" --notes "自动发布的版本 $VERSION"
+    - name: 上传 Bungee 产物
+      uses: actions/upload-artifact@v4
+      with:
+        name: ServerUtils-Bungee
+        path: Bungee/build/libs/*.jar
+
+    - name: 上传 Velocity 产物
+      uses: actions/upload-artifact@v4
+      with:
+        name: ServerUtils-Velocity
+        path: Velocity/build/libs/*.jar
