@@ -28,19 +28,16 @@ jobs:
         cache: 'gradle'
 
     - name: 赋予 gradlew 可执行权限
-      run: chmod +x Bukkit/gradlew Bungee/gradlew Velocity/gradlew
+      run: chmod +x gradlew
 
-    # 构建 Bukkit 版本
     - name: 构建 Bukkit
-      run: cd Bukkit && ./gradlew clean build --stacktrace
+      run: ./gradlew -p Bukkit clean build --stacktrace
 
-    # 构建 Bungee 版本
     - name: 构建 Bungee
-      run: cd Bungee && ./gradlew clean build --stacktrace
+      run: ./gradlew -p Bungee clean build --stacktrace
 
-    # 构建 Velocity 版本
     - name: 构建 Velocity
-      run: cd Velocity && ./gradlew clean build --stacktrace
+      run: ./gradlew -p Velocity clean build --stacktrace
 
     # 上传构建产物 (Artifacts)
     - name: 上传 Bukkit 产物
@@ -60,3 +57,4 @@ jobs:
       with:
         name: ServerUtils-Velocity
         path: Velocity/build/libs/*.jar
+
