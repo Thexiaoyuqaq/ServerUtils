@@ -1,35 +1,55 @@
 name: Java CI with Gradle
+
 on:
   push:
     branches: [ master ]
+    tags:
+      - "v*"
   pull_request:
     branches: [ master ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [ 8 ]
+        java-version: [ 8, 17 ]
       fail-fast: true
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup JDK ${{ matrix.java-version }}
+    - name: 检出代码
+      uses: actions/checkout@v4
+
+    - name: 设置 JDK ${{ matrix.java-version }}
       uses: actions/setup-java@v2
       with:
-        distribution: adopt
+        distribution: 'adopt'
         java-version: ${{ matrix.java-version }}
-    - name: Grant execute permission for gradlew
+        cache: 'gradle'
+
+    - name: 赋予 gradlew 可执行权限
       run: chmod +x gradlew
-    - name: Build
+
+    - name: 构建项目
       run: ./gradlew clean build --stacktrace
-    - name: Upload artififacts
-      uses: actions/upload-artifact@v2.2.1
+
+    - name: 上传构建产物 (Artifacts)
+      uses: actions/upload-artifact@v3
       with:
-        name: ServerUtils
-        path: jars/*.jar
-    - name: Publish
-      if: ${{ github.event_name == 'push' }}
+        name: ServerUtils-${{ matrix.java-version }}
+        path: build/libs/*.jar
+
+    - name: 发布到仓库 (仅在 push 触发)
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       env:
         FVDH_USERNAME: ${{ secrets.FVDH_USERNAME }}
         FVDH_TOKEN: ${{ secrets.FVDH_TOKEN }}
       run: ./gradlew publish --stacktrace
+
+    - name: 发布 GitHub Release (仅在 tag push 时)
+      if: startsWith(github.ref, 'refs/tags/v')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        gh release create "$VERSION" build/libs/*.jar --title "Release $VERSION" --notes "自动发布的版本 $VERSION"
