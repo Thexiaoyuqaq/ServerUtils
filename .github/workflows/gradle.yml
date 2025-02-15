@@ -39,22 +39,12 @@ jobs:
     - name: 构建 Velocity
       run: ./gradlew -p Velocity clean build --stacktrace
 
-    # 上传构建产物 (Artifacts)
-    - name: 上传 Bukkit 产物
+    - name: 上传构建产物
       uses: actions/upload-artifact@v4
       with:
-        name: ServerUtils-Bukkit
-        path: Bukkit/build/libs/*.jar
-
-    - name: 上传 Bungee 产物
-      uses: actions/upload-artifact@v4
-      with:
-        name: ServerUtils-Bungee
-        path: Bungee/build/libs/*.jar
-
-    - name: 上传 Velocity 产物
-      uses: actions/upload-artifact@v4
-      with:
-        name: ServerUtils-Velocity
-        path: Velocity/build/libs/*.jar
+        name: ServerUtils-Artifacts
+        path: |
+          Bukkit/build/libs/*.jar
+          Bungee/build/libs/*.jar
+          Velocity/build/libs/*.jar
 
